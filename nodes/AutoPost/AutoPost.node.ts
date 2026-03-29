@@ -289,6 +289,14 @@ export class AutoPost implements INodeType {
 				displayOptions: { show: { resource: ['posts'], operation: ['getAll'] } },
 			},
 			{
+				displayName: 'Account ID',
+				name: 'accountId',
+				type: 'string',
+				default: '',
+				description: 'Filter posts by specific account ID. Get account IDs from the "Get all accounts" action.',
+				displayOptions: { show: { resource: ['posts'], operation: ['getAll'] } },
+			},
+			{
 				displayName: 'Limit',
 				name: 'limit',
 				type: 'number',
@@ -536,6 +544,7 @@ export class AutoPost implements INodeType {
 						const scheduledFrom = this.getNodeParameter('scheduledFrom', i, '') as string;
 						const scheduledTo = this.getNodeParameter('scheduledTo', i, '') as string;
 						const returnFields = this.getNodeParameter('returnFields', i, []) as string[];
+						const accountId = this.getNodeParameter('accountId', i, '') as string;
 						const limit = this.getNodeParameter('limit', i, 20) as number;
 						const page = this.getNodeParameter('page', i, 1) as number;
 
@@ -544,6 +553,7 @@ export class AutoPost implements INodeType {
 						if (platformFilter.length > 0) qs.platform = platformFilter.join(',');
 						if (scheduledFrom) qs.scheduled_from = scheduledFrom;
 						if (scheduledTo) qs.scheduled_to = scheduledTo;
+						if (accountId) qs.account_id = accountId;
 
 						responseData = await makeRequest('GET', '/posts', undefined, qs);
 
