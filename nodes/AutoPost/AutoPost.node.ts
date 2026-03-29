@@ -201,11 +201,18 @@ export class AutoPost implements INodeType {
 				displayOptions: { show: { resource: ['posts'], operation: ['create'] } },
 			},
 			{
+				displayName: 'Scheduling Tip',
+				name: 'scheduledAtNotice',
+				type: 'notice',
+				default: '💡 Tip: Use n8n expression {{ $now.toISO() }} for current time, or {{ DateTime.fromISO(\'2026-03-29T16:00:00\', {zone: \'Asia/Baghdad\'}).toISO() }} for timezone-aware scheduling',
+				displayOptions: { show: { resource: ['posts'], operation: ['create'] } },
+			},
+			{
 				displayName: 'Scheduled At',
 				name: 'scheduled_at',
-				type: 'dateTime',
+				type: 'string',
 				default: '',
-				description: 'ISO 8601 datetime to schedule the post. Leave empty to publish immediately.',
+				description: 'Schedule date and time in ISO 8601 format with timezone. Examples:\n- 2026-03-29T16:10:00+03:00 (Iraq time UTC+3)\n- 2026-03-29T13:10:00Z (UTC)\n- 2026-03-29T08:10:00-05:00 (New York time)\nUse n8n\'s $now.plus() or DateTime expressions to build this automatically. Leave empty to publish immediately.',
 				displayOptions: { show: { resource: ['posts'], operation: ['create'] } },
 			},
 			{
