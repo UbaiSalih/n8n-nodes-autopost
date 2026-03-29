@@ -1,0 +1,19 @@
+{
+  "node": "n8n-nodes-autopost.autoPost",
+  "nodeVersion": "1.0",
+  "codexVersion": "1.0",
+  "categories": ["Marketing", "Communication"],
+  "resources": {
+    "credentialDocumentation": [
+      {
+        "url": "https://autopost.thenextgen.ai/docs/api"
+      }
+    ],
+    "primaryDocumentation": [
+      {
+        "url": "https://autopost.thenextgen.ai/docs"
+      }
+    ]
+  },
+  "alias": ["autopost", "social media", "scheduling", "instagram", "facebook", "linkedin"]
+}
