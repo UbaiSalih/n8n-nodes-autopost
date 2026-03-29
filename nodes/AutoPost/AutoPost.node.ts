@@ -241,6 +241,54 @@ export class AutoPost implements INodeType {
 				displayOptions: { show: { resource: ['posts'], operation: ['getAll'] } },
 			},
 			{
+				displayName: 'Platform',
+				name: 'platformFilter',
+				type: 'multiOptions',
+				options: [
+					{ name: 'Facebook', value: 'facebook' },
+					{ name: 'Instagram', value: 'instagram' },
+					{ name: 'LinkedIn Personal', value: 'linkedin_personal' },
+					{ name: 'LinkedIn Business', value: 'linkedin_business' },
+					{ name: 'TikTok', value: 'tiktok' },
+				],
+				default: [],
+				description: 'Filter posts by platform',
+				displayOptions: { show: { resource: ['posts'], operation: ['getAll'] } },
+			},
+			{
+				displayName: 'Scheduled From',
+				name: 'scheduledFrom',
+				type: 'dateTime',
+				default: '',
+				description: 'Filter posts scheduled after this date',
+				displayOptions: { show: { resource: ['posts'], operation: ['getAll'] } },
+			},
+			{
+				displayName: 'Scheduled To',
+				name: 'scheduledTo',
+				type: 'dateTime',
+				default: '',
+				description: 'Filter posts scheduled before this date',
+				displayOptions: { show: { resource: ['posts'], operation: ['getAll'] } },
+			},
+			{
+				displayName: 'Return Fields',
+				name: 'returnFields',
+				type: 'multiOptions',
+				options: [
+					{ name: 'ID', value: 'id' },
+					{ name: 'Content', value: 'content' },
+					{ name: 'Platforms', value: 'platforms' },
+					{ name: 'Scheduled At', value: 'scheduledAt' },
+					{ name: 'Status', value: 'status' },
+					{ name: 'Image URL', value: 'imageUrl' },
+					{ name: 'Created At', value: 'createdAt' },
+				],
+				default: [],
+				description: 'Select which fields to return. Leave empty to return all fields.',
+				displayOptions: { show: { resource: ['posts'], operation: ['getAll'] } },
+			},
+			{
 				displayName: 'Limit',
 				name: 'limit',
 				type: 'number',
@@ -484,13 +532,32 @@ export class AutoPost implements INodeType {
 						responseData = await makeRequest('POST', '/posts', body);
 					} else if (operation === 'getAll') {
 						const status = this.getNodeParameter('status', i, '') as string;
+						const platformFilter = this.getNodeParameter('platformFilter', i, []) as string[];
+						const scheduledFrom = this.getNodeParameter('scheduledFrom', i, '') as string;
+						const scheduledTo = this.getNodeParameter('scheduledTo', i, '') as string;
+						const returnFields = this.getNodeParameter('returnFields', i, []) as string[];
 						const limit = this.getNodeParameter('limit', i, 20) as number;
 						const page = this.getNodeParameter('page', i, 1) as number;
 
 						const qs: IDataObject = { limit, page };
 						if (status) qs.status = status;
+						if (platformFilter.length > 0) qs.platform = platformFilter.join(',');
+						if (scheduledFrom) qs.scheduled_from = scheduledFrom;
+						if (scheduledTo) qs.scheduled_to = scheduledTo;
 
 						responseData = await makeRequest('GET', '/posts', undefined, qs);
+
+						// Filter fields client-side if requested
+						if (returnFields.length > 0 && responseData) {
+							const raw = (responseData as IDataObject);
+							const rows: IDataObject[] = Array.isArray(raw) ? raw as IDataObject[] : (raw.data as IDataObject[] ?? []);
+							const filtered = rows.map((row) => {
+								const out: IDataObject = {};
+								for (const f of returnFields) out[f] = (row as IDataObject)[f];
+								return out;
+							});
+							responseData = Array.isArray(raw) ? filtered : { ...raw, data: filtered };
+						}
 					} else if (operation === 'delete') {
 						const postId = this.getNodeParameter('postId', i) as string;
 						responseData = await makeRequest('DELETE', `/posts/${postId}`);
