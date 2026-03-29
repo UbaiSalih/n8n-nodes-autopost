@@ -186,6 +186,21 @@ export class AutoPost implements INodeType {
 				displayOptions: { show: { resource: ['posts'], operation: ['create'] } },
 			},
 			{
+				displayName: 'Platform Notes',
+				name: 'platformNotice',
+				type: 'notice',
+				default: 'Facebook & Instagram: supports text, image, video\nLinkedIn: supports text and image (video requires direct upload)\nTikTok: requires video file',
+				displayOptions: { show: { resource: ['posts'], operation: ['create'] } },
+			},
+			{
+				displayName: 'Account IDs',
+				name: 'accountIds',
+				type: 'string',
+				default: '',
+				description: 'Comma-separated account IDs to publish to. Get account IDs from the "Get all accounts" action. Leave empty to use the default account.',
+				displayOptions: { show: { resource: ['posts'], operation: ['create'] } },
+			},
+			{
 				displayName: 'Scheduled At',
 				name: 'scheduled_at',
 				type: 'dateTime',
@@ -194,11 +209,11 @@ export class AutoPost implements INodeType {
 				displayOptions: { show: { resource: ['posts'], operation: ['create'] } },
 			},
 			{
-				displayName: 'Image URL',
-				name: 'image_url',
+				displayName: 'Media URL',
+				name: 'mediaUrl',
 				type: 'string',
 				default: '',
-				description: 'Optional public URL of an image to attach to the post',
+				description: 'Public URL of an image (JPG, PNG) or video (MP4, MOV) to attach. For LinkedIn and TikTok, video URL must be publicly accessible.',
 				displayOptions: { show: { resource: ['posts'], operation: ['create'] } },
 			},
 
@@ -446,11 +461,18 @@ export class AutoPost implements INodeType {
 						const content = this.getNodeParameter('content', i) as string;
 						const platforms = this.getNodeParameter('platforms', i) as string[];
 						const scheduled_at = this.getNodeParameter('scheduled_at', i, '') as string;
-						const image_url = this.getNodeParameter('image_url', i, '') as string;
+						const mediaUrl = this.getNodeParameter('mediaUrl', i, '') as string;
+						const accountIdsRaw = this.getNodeParameter('accountIds', i, '') as string;
 
 						const body: IDataObject = { content, platforms };
 						if (scheduled_at) body.scheduled_at = scheduled_at;
-						if (image_url) body.image_url = image_url;
+						if (mediaUrl) body.image_url = mediaUrl;
+						if (accountIdsRaw.trim()) {
+							body.account_ids = accountIdsRaw
+								.split(',')
+								.map((s) => parseInt(s.trim(), 10))
+								.filter((n) => !isNaN(n));
+						}
 
 						responseData = await makeRequest('POST', '/posts', body);
 					} else if (operation === 'getAll') {
