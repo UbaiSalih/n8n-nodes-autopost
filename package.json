@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-autopost",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "n8n community node for AutoPost TheNextGen - Social media scheduling and inbox management",
   "keywords": [
     "n8n-community-node-package",

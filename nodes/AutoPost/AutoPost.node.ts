@@ -293,7 +293,7 @@ export class AutoPost implements INodeType {
 				name: 'accountId',
 				type: 'string',
 				default: '',
-				description: 'Filter posts by specific account ID. Get account IDs from the "Get all accounts" action.',
+				description: 'Filter by account ID (the numeric ID from "Get all accounts", NOT the platform page ID). Example: use ID 37 not \'552126474642948\'',
 				displayOptions: { show: { resource: ['posts'], operation: ['getAll'] } },
 			},
 			{
